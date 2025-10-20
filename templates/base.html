@@ -1,0 +1,421 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <!-- Core Meta Tags -->
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Iga amategeko y'umuhanda, witoze  ibibazo uzabazwa mu kizamini cya provisior, hamwe n' IGAZETI.RW." />
+
+        <title>{% block title %}Amategeko y'Umuhanda | Ikizamini cya Provisior{% endblock %} | IGAZETI.RW</title>
+        <link rel="canonical" href="https://www.igazeti.rw" />
+        <link rel="alternate" href="https://www.igazeti.rw" hreflang="rw" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+        <!-- Favicon & App Manifest -->
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" />
+        <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}" />
+        <link rel="manifest" href="{% static 'site.webmanifest' %}" />
+
+        <!-- Theme Configuration -->
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
+
+        <!-- Open Graph Meta Tags (for social sharing) -->
+        <meta property="og:title" content="Amategeko y'umuhanda ku rubuga IGAZETI.RW" />
+
+        <meta property="og:description" content="Igana natwe amategeko y'umuhanda, ubone Provisior mu gihe gito🪪"/>
+        <meta property="og:image" content="https://www.igazeti.rw/static/img/logo.png" />
+        <meta property="og:url" content="https://www.igazeti.rw" />
+        <meta property="og:type" content="website" />
+
+        <!-- Twitter Card Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Ikizamini cya Provisior - Amategeko y'Umuhanda" />
+        <meta name="twitter:description" content="Witoze ikizamini cyakozwe, menya umuvuduko, rumoroki, makuzungu na byose ku kinyabiziga." />
+
+        <meta name="twitter:image" content="https://www.igazeti.rw/static/img/logo.png" />
+
+        <!-- Stylesheets -->
+
+        {% block css_framework %}
+
+        <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"></noscript>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+
+        {% endblock %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+        <link rel="stylesheet" href="{% static 'css/theme.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/login.css' %}" />        
+
+            {% block extra_css %}
+            <style>
+                #main-content {
+                    margin-top: 25px;
+                }
+                .scroll-btn {
+                    transition: opacity 0.4s ease;
+                }
+            </style>
+            {% endblock %}
+            {% if not user.is_authenticated %}
+                <style>
+                    .hours {
+                        display: none;
+                    }
+
+                    main{
+                        padding-top:40px;
+                    }
+
+
+                </style>
+
+            {% endif %}
+
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8155682167004021"
+     crossorigin="anonymous"></script>
+    </head>
+
+
+    <body class="d-flex flex-column min-vh-100 bg-theme text-theme gap-0">
+        {% include "registration/login.html" %}
+        <!-- Global Loader -->
+        <div class="global-loader" id="global-loader" aria-hidden="true">
+            <div class="spinner" role="status"></div>
+            <div class="loader-text px-2">Loading...</div>
+        </div>
+
+        <!-- Status Icons -->
+        <div class="status-icon checkmark-icon" id="success-indicator">
+            <i class="bi bi-check-circle-fill"></i> <!-- Bootstrap checkmark icon -->
+        </div>
+
+        <div class="status-icon error-icon" id="error-indicator">
+            <i class="bi bi-x-circle-fill"></i> <!-- Bootstrap X mark icon -->
+        </div>
+        <!-- Navigation -->
+        {% block navbar %}
+        {% include 'default-navbar.html' %}
+        {% endblock %} 
+
+        <!-- Main Content -->
+        <main class="flex-grow-1">
+            <div class="container" id="main-content">
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+       
+        <!-- Footer -->
+        <footer class="bg-light text-dark py-4 mt-0 mx-0 border-top border-secondary">
+            <div class="container-fluid text-center">
+                <!-- Social Links -->
+                <div class="d-flex flex-wrap justify-content-center align-items-center gap-4 mb-3">
+                <a href="https://wa.me/250789351626" target="_blank" class="text-decoration-none text-dark d-flex align-items-center gap-2 hover-opacity">
+                    <i class="bi bi-whatsapp fs-5 text-success"></i>
+                    <span>0789351626</span>
+                </a>
+
+                <a href="https://youtube.com/@rwandadrivingcollegetv?si=GTZdFPkvWQHjNI7F" target="_blank" class="text-decoration-none text-dark d-flex align-items-center gap-2 hover-opacity ">
+                    <i class="bi bi-youtube fs-5 text-danger"></i>
+                    <span>Youtube Channel</span>
+                </a>
+
+                <a href="https://chat.whatsapp.com/EML2PsaUVTvFMWv2cBK4iO" target="_blank" class="text-decoration-none d-flex align-items-center text-dark gap-2 hover-opacity">
+                    <i class="fa-solid fa-users fs-5 text-success"></i>
+                    <span>Injira muri WhatsApp Group</span>
+                </a>
+                </div>
+
+                <!-- Divider -->
+                <hr class="border-secondary w-75 mx-auto opacity-25">
+
+                <!-- Footer Info -->
+                <div class="small text-center opacity-75">
+                &copy; {% now "Y" %} <strong>Rwanda Driving College</strong> — All rights reserved.
+                </div>
+            </div>
+        </footer>
+
+        <style>
+            .hover-opacity {
+                transition: opacity 0.3s ease, transform 0.3s ease;
+            }
+            .hover-opacity:hover {
+                opacity: 0.8;
+                transform: translateY(-2px);
+            }
+            footer i {
+                transition: transform 0.3s ease;
+            }
+            footer a:hover i {
+                transform: scale(1.2);
+            }
+        </style>
+
+        {% include "logout_confirm.html" %}
+        <!-- Core Scripts -->
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script src="{% static "js/back-top.js" %}"></script>
+
+        <!-- Global Loading System -->
+        <!-- In base.html -->
+        <script>
+            // Enhanced global loader system
+            const globalLoader = {
+                element: document.getElementById('global-loader'),
+                successIndicator: document.getElementById('success-indicator'),
+                errorIndicator: document.getElementById('error-indicator'),
+                flashMessages: document.getElementById('flash-messages'),
+
+
+                show: () => {
+                    globalLoader.element.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                },
+
+                hide: () => {
+                    globalLoader.element.classList.remove('active');
+                    document.body.style.overflow = '';
+                },
+
+                showSuccess: () => {
+                    globalLoader.hide();
+                    globalLoader.successIndicator.classList.add('show');
+                    setTimeout(() => {
+                        globalLoader.successIndicator.classList.remove('show');
+                    }, 2000); // Show checkmark for 2 seconds
+                },
+            };
+
+
+            let xklName = `<div class="d-flex align-items-center">
+                <i class="bi bi-car-front-fill text-warning fs-1"></i>
+                <span class=""> IGAZETI.RW </span>
+            <i class="bi bi-mortarboard text-success fs-1"> </i>
+            </div>`;
+            // Set the content of the element with id "kds"
+            document.getElementById("kds").innerHTML = xklName;
+
+            // Auto-handle form submissions
+            document.addEventListener('submit', function (e) {
+                if (e.target.tagName.toLowerCase() === 'form') {
+                    const form = e.target;
+                    globalLoader.show();
+
+                    // Handle AJAX form submissions
+                    if (form.dataset.ajax === 'true') {
+                        e.preventDefault();
+                        const formData = new FormData(form);
+
+                        fetch(form.action, {
+                            method: form.method,
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+                            },
+                            credentials: 'same-origin'
+                        })
+                            .then(response => {
+                                if (!response.ok) throw new Error(response.statusText);
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    globalLoader.showSuccess();
+                                    if (data.redirect) {
+                                        setTimeout(() => {
+                                            window.location.href = data.redirect;
+                                        }, 2000); // Redirect after 2 seconds
+                                    }
+                                } else {
+                                    globalLoader.showError();
+                                }
+                            })
+                            .catch(error => {
+                                globalLoader.showError();
+                                console.error('Error:', error);
+                            });
+                    }
+                }
+            });
+
+            // Handle successful page loads
+            document.addEventListener('DOMContentLoaded', () => {
+                globalLoader.hide();
+
+                // Check for success messages in flash messages
+                const successMessage = document.querySelector('.alert-success');
+                const errorMessage = document.querySelector('.alert-danger');
+
+                if (successMessage) {
+                    globalLoader.showSuccess();
+                } else if (errorMessage) {
+                    globalLoader.showError();
+                }
+
+                // Initialize time slots
+                document.querySelectorAll(".time-slot").forEach(slot => {
+                    slot.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        document.querySelectorAll(".time-slot").forEach(s => s.classList.remove("active"));
+                        slot.classList.add("active");
+                    });
+                });
+            });
+
+            // Handle navigation events
+            window.addEventListener('beforeunload', () => globalLoader.show());
+            window.addEventListener('unload', () => globalLoader.hide());
+        </script>
+        <script type="application/ld+json">
+            {
+            "@context": "https://schema.org",
+            "@type": "DrivingSchool",
+            "name": "IGAZETI.RW",
+            "description": "IGA amategeko y'umuhanda ukosore ibibazo uzabazwa mu kizamini cya provisior mu buryo bworoshye.",
+            "url": "https://www.igazeti.rw",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Kigali",
+                "addressCountry": "RW"
+            }
+            }
+        </script>
+
+            <!-- Modals -->
+
+            {% block extra_js %}
+
+        <!-- Page-specific Scripts -->
+            {% endblock %}
+     <!-- Middle Right Scroll Buttons with Spacing -->
+        <div id="scroll-buttons" class="position-fixed top-50 end-0 translate-middle-y  p-0 d-flex flex-column gap-2 align-items-end" style="z-index: 1050;">
+            <button id="scrollTopBtn" type="button"
+                class="btn btn-outline-theme p-1 rounded-circle shadow-sm scroll-btn fade bounce"
+                data-bs-toggle="tooltip" data-bs-placement="left" title="Back to Top"
+                style="width: 30px; height: 30px; font-size: 14px; opacity: 0;">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+
+            <button id="scrollBottomBtn" type="button"
+                class="btn btn-outline-theme p-1 rounded-circle shadow-sm scroll-btn bounce"
+                data-bs-toggle="tooltip" data-bs-placement="left" title="Go to Bottom"
+                style="width: 30px; height: 30px; font-size: 14px;">
+                <i class="fa-solid fa-arrow-down"></i>
+            </button>
+        </div>
+
+       <!-- Unverified Subscription Modal -->
+<div class="modal fade" id="unverifiedModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-theme text-theme">
+        <h6 class="modal-title fw-bold">Ubwishyu bwawe bwemejwe</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <a href="{% url 'activate_subscription' %}" class="btn rounded-pill shadow-lg" 
+        style="background-color: rgba(var(--text-rgb), 1); 
+            color: rgba(var(--background-rgb), 1);">Fungura ifatabuzi</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const currentPath = window.location.pathname;
+    const activateUrls = [
+    "{% url 'activate_subscription' %}",
+    "{% url 'subscription' %}",
+    ];
+
+    if (activateUrls.includes(currentPath)) return;
+
+    fetch("{% url 'check_unverified' %}", {
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+    })
+    .then(data => {
+        if (data.unverified) {
+            const modal = new bootstrap.Modal(document.getElementById("unverifiedModal"), {
+                backdrop: true,   // allow closing by clicking outside
+                keyboard: true    // allow closing with ESC
+            });
+            modal.show();
+        }
+    })
+    .catch(err => console.error("Error checking subscription:", err));
+});
+</script>
+
+        <script>
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            const scrollBottomBtn = document.getElementById('scrollBottomBtn');
+            const scrollButtons = document.getElementById('scroll-buttons');
+
+            // Scroll behavior
+            scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+            scrollBottomBtn.addEventListener('click', () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }));
+
+            // Show scrollTopBtn only after some scroll
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    scrollTopBtn.style.opacity = '1';
+                } else {
+                    scrollTopBtn.style.opacity = '0';
+                }
+                showButtonsTemporarily(); // Reset timer on scroll
+            });
+
+            // Auto-hide after inactivity
+            let hideTimer;
+            function showButtonsTemporarily() {
+                scrollButtons.classList.add('fade-in');
+                scrollButtons.classList.remove('fade-out');
+
+                clearTimeout(hideTimer);
+                hideTimer = setTimeout(() => {
+                    scrollButtons.classList.add('fade-out');
+                    scrollButtons.classList.remove('fade-in');
+                }, 3000); // Hide after 1 seconds
+            }
+
+            // Trigger on any mouse or scroll interaction
+            ['mousemove', 'scroll', 'keydown', 'touchstart'].forEach(evt => {
+                window.addEventListener(evt, showButtonsTemporarily);
+            });
+
+            // Initial state
+            scrollButtons.classList.add('fade-in');
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const currentPath = window.location.pathname;
+
+                if (currentPath === "{% url "login" %}") {
+                    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                    loginModal.show();
+                }
+            });
+        </script>
+        <script src="{% static 'js/theme-switcher.js' %}"></script>
+    </body>
+
+</html>

@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Payment | Choose Plan{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">Ibiciro</h2>
+  </div>
+
+  <!-- PLANS -->
+  <div class="row g-4 justify-content-center" style="min-height: 50vh">
+    {% for plan in plans %}
+    <div class="col-md-4">
+      <div class="card shadow-sm plan-card border-2"
+           id="plan-{{ plan.id }}"
+           data-plan-id="{{ plan.id }}"
+           data-plan-label="{{ plan.plan_label }}"
+           data-plan-price="{{ plan.price }}">
+        <div class="card-body text-center">
+          <h5 class="card-title fw-bold">{{ plan.plan_label }}</h5>
+          <h3 class="text-primary fw-bold">{{ plan.price }} RWF</h3>
+          <button class="btn btn-outline-primary payButton" type="button">Ishyura</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- PAYMENT INSTRUCTIONS -->
+  <div class="mt-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="fw-semibold mb-3 text-center">Ishyura na MoMoPay</h5>
+
+        <div class="alert alert-info text-center mb-4">
+          <input type="hidden" name="plan_id" id="selectedPlan">
+          <div class="ussd-code">
+            *182*8*1*187756*<strong id="js-plan">0</strong>#
+          </div>
+          <button id="callButton" class="btn btn-outline-primary d-md-none mt-2">
+            <i class="bi bi-telephone me-2"></i>Emeza
+          </button>
+          <h4 class="m-4 fw-bold">Amazina ni Clement</h4>
+          <button
+              class="btn btn-primary fw-bold mb-1 rounded-pill"
+              data-bs-toggle="modal"
+              data-bs-target="#confirmPayModal"
+              data-bs-dismiss="modal"
+            >
+              <i class="bi bi-check2-all me-2"></i>
+              Nasoje kwishyura
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+   <div
+      class="modal fade"
+      id="confirmPayModal"
+      tabindex="-1"
+      aria-labelledby="confirmPayModalLabel"
+      aria-hidden="true" >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <form method="post" action="{% url 'payment_confirm' %}">
+            {% csrf_token %}
+            <div class="modal-header position-relative">
+              <h5 class="modal-title" id="confirmPayModalLabel">
+                Telefone n'amazina by'uwishyuye
+              </h5>
+              <button
+                type="button" 
+                class="btn fs-4 position-absolute end-0 top-0"
+                onclick="window.location.reload()"
+              >
+            <i class="bi bi-x"></i>
+            </button>
+            </div>
+            <div class="modal-body">
+              <input
+                type="tel" 
+                pattern="\d{10}" title="Reba neza ko nimero ariyo!!!"
+                id="phone"
+                maxlength="12"
+                name="payeer_phone"
+                class="form-control mb-3"
+                placeholder="Nimero yishyuye"                
+                required
+              />
+              <input
+                type="text" 
+                pattern="[A-Za-z\s]+" 
+                title="Enter letters and spaces only"
+                id="name"
+                name="payeer_name"
+                class="form-control"
+                placeholder="Amazina"
+                required
+              />
+
+              <select
+                class="form-select mt-3"
+                id="plan"
+                name="plan"
+                aria-label="Plan selection"
+                required
+              >
+                <option value="" disabled selected>
+                  Hitampo ifatabuguzi wishyuye
+                </option>
+                {% for plan in plans %}
+                <option
+                  class="text-theme"
+                  value="{{ plan.price }}">
+                  {{ plan.plan_label }} - {{ plan.price }} RWF
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="modal-body">
+              <p class="text-muted">Uzuza nimero izaho Code:</p>
+              <input
+                type="text"
+                pattern="\d{10}" title="Reba neza ko nimero ariyo!!!"
+                maxlength="12"
+                id="whatsapp_number"
+                name="whatsapp_number"
+                class="form-control"
+                placeholder="Nimero ya WhatsApp"
+                required
+              />
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="submit"
+                class="btn btn-primary"
+              >
+                Emeza ubwishyu
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let selectedCard = null;
+
+    document.querySelectorAll(".plan-card").forEach(card => {
+      card.addEventListener("click", () => selectPlan(card));
+    });
+
+    document.querySelectorAll(".payButton").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.stopPropagation();
+        const card = btn.closest(".plan-card");
+        selectPlan(card);
+        document.querySelector(".alert-info").scrollIntoView({ behavior: "smooth" });
+      });
+    });
+
+    function selectPlan(card) {
+      if (selectedCard) {
+        selectedCard.classList.remove("border-primary", "active");
+        selectedCard.querySelector(".payButton").classList.remove("animate-pay");
+      }
+
+      card.classList.add("border-primary", "active");
+      selectedCard = card;
+
+      const id = card.dataset.planId;
+      const price = card.dataset.planPrice;
+      document.getElementById("selectedPlan").value = id;
+      document.getElementById("js-plan").textContent = price;
+
+      // Animate the pay button
+      const btn = card.querySelector(".payButton");
+      btn.classList.add("animate-pay");
+    }
+
+    const callButton = document.getElementById("callButton");
+    callButton.addEventListener("click", () => {
+      const activeCard = document.querySelector(".plan-card.active");
+      if (!activeCard) {
+        alert("Banza uhitemo ifatabuguzi wifuza kwishyura.");
+        return;
+      }
+      const planPrice = activeCard.dataset.planPrice;
+      const ussdCode = `*182*8*1*187756*${planPrice}#`;
+      window.location.href = "tel:" + encodeURIComponent(ussdCode);
+    });
+  });
+</script>
+
+<style>
+  .plan-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  .plan-card.border-primary {
+    box-shadow: 0 0 10px rgba(0,123,255,0.4);
+  }
+
+  /* PAY BUTTON ANIMATION */
+  @keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 rgba(0,123,255,0.6); }
+    50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(0,123,255,0.5); }
+    100% { transform: scale(1); box-shadow: 0 0 0 rgba(0,123,255,0); }
+  }
+
+  .animate-pay {
+    animation: pulse 1s ease-in-out 1;
+    border-color: #0d6efd;
+    color: #0d6efd;
+  }
+
+  .ussd-code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 1.2rem;
+    margin: 0;
+    display: inline-block;
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,331 @@
+{% load custom_filters %}
+
+<style>
+  .mobile-exam-times {
+    padding: 0;
+  }
+
+  .note {
+    background-color: rgba(var(--surface-rgb), 0.8);
+    color: rgba(var(--text-rgb), 1);
+    border-radius: 0.5rem 0.5rem 0 0;
+    padding: 0.7rem 0.8rem 0 0.8rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .scrollable-times {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: rgba(var(--surface-rgb), 0.5);
+    border-radius: 0 0 0.5rem 0.5rem;
+    scrollbar-width: none;
+    animation: fadeIn 0.8s ease-in-out;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scrollable-times::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .scrollable-times {
+      justify-content: flex-start;
+    }
+  }
+
+  .exam-hour {
+    flex: 0 0 auto;
+    position: relative;
+    font-weight: 500;
+    animation: slideUp 0.5s ease;
+  }
+
+  .hour-link {
+    padding: 0.5rem 1rem;
+    background-color: rgba(0, 200, 80, 0.2);
+    border: 1px solid rgba(0, 200, 80, 0.6);
+    border-radius: 0.5rem;
+    color: rgb(0, 222, 78);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+  }
+
+  .hour-link:hover {
+    background-color: rgba(0, 222, 78, 0.4);
+  }
+
+  .hour-link.disabled {
+    background-color: rgba(180, 180, 180, 0.2);
+    color: #888;
+    cursor: not-allowed;
+    border: 1px dashed #aaa;
+    pointer-events: none;
+  }
+
+  .completed-check,
+  .pending-check,
+  .live-badge {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    z-index: 1;
+  }
+
+  .completed-check {
+    top: -8px;
+    right: -8px;
+    background: #28a745;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    border: 1px solid white;
+  }
+
+  .live-badge {
+    top: -10px;
+    right: -5px;
+    background: red;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+    padding: 1px 4px;
+    animation: blink 1.2s infinite;
+  }
+  .countdown {
+    position: absolute; /* ← This is what was missing */
+    top: -10px;
+    right: -5px;
+    background: black;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+    padding: 1px 4px;
+    font-size: 11px;
+    z-index: 1;
+    animation: blink 1.2s infinite;
+  }
+  
+
+  .pending-check {
+    top: -3px;
+    left: -2px;
+    {% comment %} background: #ffc107; {% endcomment %}
+    border-radius: 50%;
+    width: 20px;
+    height: 10px;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .fade-in {
+    animation: fadeInLive 1s ease-in forwards;
+  }
+  
+  @keyframes fadeInLive {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+</style>
+
+<div class="mobile-exam-times">
+  <div class="container-fluid">
+    <div class="note">Kanda ku isaha ukosore ikizamini cyakozwe</div>
+    <div class="scrollable-times" id="js-update">
+      {% for exam in exams_scheduled|dictsort:"scheduled_datetime" %}
+        <div class="exam-hour" id="exam-hour-{{ exam.id }}">
+          {% if exam.exam.id in completed_exam_ids %}
+            <div class="completed-check" aria-label="Exam completed">✓</div>
+          {% endif %}
+          
+          {% if exam.is_published %}
+            <a href="{% url 'exam_detail' exam.exam.id %}" class="hour-link position-relative" aria-label="Open Exam at {{ exam.scheduled_datetime|time:'H:i' }}">
+              {% if exam.is_live %}
+                <span class="live-badge fade-in" aria-label="Live">LIVE</span>
+              {% endif %}
+              {{ exam.scheduled_datetime|time:"H:00" }}
+            </a>
+          {% else %}
+            <span class="hour-link disabled position-relative" title="Isaha ntago iragera" aria-disabled="true">
+              {% comment %} <span class="pending-check" aria-label="Pending">Mu minota</span> {% endcomment %}
+               
+              <span id="hour-span" class="countdown fade-in d-none" role="timer" aria-live="polite">
+              {% with exam.remaining_time|minutes as minutes %}
+                {% with exam.remaining_time|seconds as seconds %}
+                  {{ minutes }}:{{ seconds|default:"00"|stringformat:"02d" }}
+                {% endwith %}                
+              {% endwith %}
+              </span>
+              
+              <span >{{ exam.scheduled_datetime|time:"H:00" }}</span>
+            </span>
+          {% endif %}
+        </div>
+      {% empty %}
+      <style>
+       
+        .note {
+          display: none;
+        }
+      </style>
+        <div class="week d-flex justify-content-center align-items-center flex-column">
+          
+          
+         {% comment %} <strong> Nta kizamini cyakozwe uyu munsi <i class="bi bi-exclamation-triangle"></i> 
+        </strong> <br> {% endcomment %}
+            <a href="{% url 'weekly_exams' %}" class="mx-2 fs-5" style="text-decoration: underline; text-underline-offset: 4px; ">
+            <em>Reba ibizamini by'icyumweru</em>
+            <i class="fa-solid fa-calendar-days text-muted"></i>
+            </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+  let isChecking = false;
+
+  const scrollToElementWithClass = (className) => {
+    const badge = document.querySelector(`.${className}`);
+    if (badge) {
+      const parent = badge.closest(".exam-hour");
+      parent?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      parent?.classList.add("highlighted");
+    }
+  };
+
+  setTimeout(() => {
+    const countdownSpan = document.querySelector('.countdown');
+    countdownSpan.classList.remove('d-none');
+    scrollToElementWithClass('countdown');
+    
+  }, 1000)
+
+  function updateExamUI(data, examDiv) {
+    
+    const currentHour = new Date().getHours();
+    const examHour = parseInt(data.exam_time.split(':')[0], 10);
+    const completedMark = data.completed ? '<div class="completed-check">✓</div>' : '';
+
+    if (data.is_published) {
+      const liveBadge = currentHour === examHour ? '<span class="live-badge">LIVE</span>' : '';
+      examDiv.innerHTML = `
+        ${completedMark}
+        <a href="${data.exam_url}" class="hour-link position-relative">
+          ${liveBadge}
+          ${data.exam_time}
+        </a>
+      `;
+      if (currentHour === examHour) scrollToElementWithClass("live-badge");
+    } else {
+      if (currentHour === examHour) {
+
+        const examId = examDiv.id.replace('exam-hour-', '');
+        const remainingTime = data.remaining_time;
+        const countdownSpan = examDiv.querySelector("#hour-span");
+       
+        const intervalId = startCountdown(countdownSpan, examId, remainingTime);
+       
+        scrollToElementWithClass("countdown");
+      } else {
+        examDiv.innerHTML = `
+          <span class="hour-link disabled position-relative" title="Isaha ntago iragera">
+            ${data.exam_time}
+          </span>
+        `;
+      }
+    }
+  }
+
+  function startCountdown(element, examId, remainingTimeMs) {
+
+  
+    if (!element || typeof remainingTimeMs !== 'number' || isNaN(remainingTimeMs)) {
+      console.warn(`Countdown not started: invalid remainingTime for exam ${examId}`);
+      return;
+    }
+    let endTime = Date.now() + remainingTimeMs;
+  
+    const intervalId = setInterval(() => {
+      let now = Date.now();
+      let diff = endTime - now;
+  
+      if (diff <= 0) {
+        clearInterval(intervalId);
+  
+        // Fade out countdown
+        element.style.transition = "opacity 0.5s ease";
+        element.style.opacity = 0;
+        return;
+      }
+  
+      const minutes = String(Math.floor(diff / 60000)).padStart(2, '0');
+      const seconds = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+  
+      element.textContent = `${minutes}:${seconds}`;
+    }, 1000);
+  }
+  
+  
+  async function checkExamStatus(examId) {
+    if (!examId) return;
+    try {
+      const response = await fetch(`/check-exam-status/${examId}/`);
+      const data = await response.json();
+      const examDiv = document.getElementById(`exam-hour-${examId}`);
+      if (examDiv) updateExamUI(data, examDiv);
+    } catch (error) {
+      console.error(`Error checking status for exam ${examId}:`, error);
+    }
+  }
+
+  function getExamIds() {
+    return Array.from(document.querySelectorAll(".exam-hour"))
+      .map(div => div.id.replace("exam-hour-", ""));
+  }
+
+  async function runChecks() {
+    if (isChecking) return;
+    isChecking = true;
+    await Promise.all(getExamIds().map(checkExamStatus));
+    isChecking = false;
+  }
+
+  function scheduleChecks() {
+    const now = new Date();
+    const delay = (5 - now.getMinutes() % 5) * 60000 - now.getSeconds() * 1000 - now.getMilliseconds();
+    setTimeout(() => {
+      runChecks();
+      setInterval(runChecks, 5 * 60 * 1000); 
+    }, delay);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    runChecks();
+    scheduleChecks();
+    setTimeout(() => scrollToElementWithClass("live-badge"), 800);
+  });
+</script>

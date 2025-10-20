@@ -1,0 +1,46 @@
+<ul class="list-group list-group-flush shadow-sm rounded-4 overflow-hidden">
+  {% for exam in exams %}
+  <li class="list-group-item border-0 border-bottom py-3 px-4 bg-light-subtle hover-shadow transition">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+      
+      <div class="flex-grow-1">
+        <a href="{% url 'exam_results' exam.id %}" class="text-decoration-none">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <i class="bi bi-calendar-event text-primary"></i>
+            <small class="text-muted">Wagikoze: {{ exam.completed_at|date:"d-m-Y H:i" }}</small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-bar-chart-fill 
+            {% if exam.passed_bool %} text-success {% else %} text-danger {% endif %}"></i>
+            <span class="fw-semibold text-dark">
+              Amanota: {{ exam.score }}/{{ exam.exam.total_score }}
+              <small class="text-muted">({{ exam.percent_score }}%)</small>
+            </span>
+          </div>
+        </a>
+      </div>
+
+      <a href="{% url 'exam_results' exam.id %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+        <i class="bi bi-eye"></i> Ibisubizo
+      </a>
+
+    </div>
+  </li>
+  {% empty %}
+  <li class="list-group-item text-center py-4 text-muted">
+    <i class="bi bi-info-circle me-2"></i> Nta kizamini urakora.
+  </li>
+  {% endfor %}
+</ul>
+
+<style>
+  .hover-shadow:hover {
+    background-color: #f8f9fa !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+  }
+  .transition {
+    transition: all 0.2s ease;
+  }
+</style>

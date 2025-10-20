@@ -1,0 +1,140 @@
+{% load static custom_filters %}
+<style>
+  .avatar-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--bs-primary); /* You can choose a color or use a random color generator */
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+}
+</style>
+<nav class="navbar navbar-expand-lg shadow-sm" id="navbar">
+  <div
+    class="container-fluid px-2 d-flex justify-content-between align-items-center gap-2"
+  >
+    <!-- Brand -->
+    <a
+      class="navbar-brand d-flex {% if request.path == '/' %}active{% endif %} align-items-center gap-2 text-theme"
+      href="{% url 'home' %}"
+      >
+      
+      {% if request.user.is_authenticated %}
+        <i class="bi bi-house-door-fill"></i>
+      {% endif %}
+      <strong>RD College</strong>
+    </a>
+
+    <span class="d-flex align-items-center gap-2"> 
+      <a class="{% if request.path == '/pay' %}active{% endif %}  text-theme"  href="{% url 'payment'%}">
+          <i class="bi bi-credit-card-fill"></i>                 
+      </a>
+    <button
+      class="navbar-toggler border-0 text-theme"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarMain"
+      aria-controls="navbarMain"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav Items -->
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav ms-auto align-items-center gap-2 text-theme">
+        <!-- Desktop Theme Toggler -->
+        {% comment %} <li class="nav-item d-none d-lg-block">
+          <div class="theme-toggle text-theme">
+            <button
+              class="btn btn-link p-0 text-theme themeToggle"
+              type="button"
+            >
+              <i class="themeIcon bi bi-moon fs-5"></i>
+              <span class="visually-hidden">Toggle dark mode</span>
+            </button>
+          </div>
+        </li> {% endcomment %}
+
+        
+        {% if user.is_authenticated %}
+      
+        {% if user.is_staff %}
+
+        <div class="d-flex flex-wrap gap-2">
+        <li class="nav-item">
+          <a
+            class="nav-link {% if request.path == '/admin/' %}active{% endif %}"
+
+            href="/admin"
+            aria-label="Admin Dashboard"
+          >
+            <i class="bi bi-speedometer2"></i>
+            
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link {% if request.path == '/create-exam/' %}active{% endif %}"
+
+            href="{% url 'create_exam' %}"
+            aria-label="Create Exam"
+          >
+            <i class="fa-solid fa-plus"></i>
+          </a>
+        </li>
+      
+      </div>
+          {% endif %}
+
+          <li>
+            
+          </li>
+           <li>
+               <button
+                  class="dropdown-item text-theme fw-bold d-flex align-items-center gap-2"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#logoutModal"
+                >
+                  <i class="bi bi-box-arrow-right"></i>
+                  {% comment %} <span>Sohoka</span> {% endcomment %}
+                </button>
+            </li>
+        
+        {% else %}
+        <li class="nav-item">
+          <a
+            class="nav-link {% if request.path == '/login/' %}active{% endif %}"
+            href="{% url 'login' %}"
+          >
+            <i class="bi bi-box-arrow-in-right"></i> Injira
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link {% if request.path == '/register/' %}active{% endif %}"
+            href="{% url 'register' %}"
+          >
+            <i class="bi bi-person-plus-fill"></i> Iyandikishe
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

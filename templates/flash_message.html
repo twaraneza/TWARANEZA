@@ -1,0 +1,37 @@
+{% if messages %}
+  <div class="p-3" style="z-index: 1050;">
+    {% for message in messages %}
+      <div
+        id="alert-{{ forloop.counter }}"
+        class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm rounded-pill d-flex align-items-center justify-content-between"
+        role="alert"
+      >
+        <div class="flex-grow-1 me-3 {% if message.tags == 'error' %}text-danger{% elif message.tags == 'success' %}text-success{% endif %}">{{ message|safe }}</div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+          onclick="dismissAlert('alert-{{ forloop.counter }}')"
+        ></button>
+      </div>
+    {% endfor %}
+  </div>
+
+  <script>
+    function dismissAlert(id) {
+      const alert = document.getElementById(id);
+      if (alert) {
+        // Add fade-out class
+        alert.classList.remove('show');
+        setTimeout(() => alert.remove(), 500); // wait for fade animation
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      {% for message in messages %}
+        setTimeout(() => dismissAlert('alert-{{ forloop.counter }}'), {{ messages|length }} <= 1 ? 10000 : 60000);
+      {% endfor %}
+    });
+  </script>
+{% endif %}

@@ -1,0 +1,175 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="container mt-5">
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="consentModal"
+    tabindex="-1"
+    aria-labelledby="consentModalLabel"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    
+    >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="consentModalLabel">
+            Ubutumwa kuri <i class="bi bi-whatsapp text-green"></i>WhatsApp
+          </h5>
+        </div>
+        <div class="modal-body">
+         {% include "flash_message.html" %}
+
+          <form method="POST"
+            id="consentForm" >
+            {% csrf_token %}
+            <div class="mb-4">
+              <p class="mb-1">
+                <strong>
+                  Ushaka kujya ubona Ubutumwa bw'ikizamini gishya kuri WhatsApp?
+                </strong>
+              </p>
+              <ul class="mb-3">
+                <li>
+                  <small
+                    >Ikizamini kijyaho buri Saha kuva saa 8:00 kugera
+                    15:00</small
+                  >
+                </li>
+                <li>
+                  <small>Wabifunga igihe utakibishaka</small>
+                </li>
+              </ul>
+
+              <div class="d-flex gap-2 mb-3">
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="consent"
+                  id="consent_yes"
+                  value="yes"
+                  autocomplete="off"                
+                />
+                <label
+                  class="btn fw-bolder fs-5 btn-outline-success flex-grow-1 py-2"
+                  for="consent_yes"
+                  >Yego</label
+                >
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="consent"
+                  id="consent_no"
+                  value="no"
+                  autocomplete="off"
+                />
+                <label
+                  class="btn fs-5 btn-outline-warning fw-bold flex-grow-1 py-2"
+                  for="consent_no"
+                  >Oya</label
+                >
+              </div>
+
+              {% if form.consent.errors %}
+              <div class="text-danger error mb-2">
+                {{ form.consent.errors.0 }}
+              </div>
+              {% endif %}
+            </div>
+
+  
+            <div
+              id="whatsappNumberField"
+              class="form-floating mb-3 d-none" >
+
+              <input
+                type="phone"
+                class="form-control"
+                id="whatsappNumber"
+                name="whatsapp_number"
+                placeholder="Urugero: +250788123456"
+                pattern="^\+?[0-9]{1,15}$"
+                title="Injiza nimero ya WhatsApp yawe, urugero: +2507..."
+                
+                maxlength="16"
+                oninvalid="this.setCustomValidity('Niba wahisemo yego, andika numero ya WhatsApp neza')"
+                oninput="this.setCustomValidity('')"
+                {% if form.whatsapp_number.value %}
+                value="{{ form.whatsapp_number.value }}"
+                {% endif %}
+                required
+              />
+              <label for="whatsappNumber" class="form-label text-secondary">
+                <i class="bi bi-whatsapp text-green"></i>
+                Andika Nimero ukoresha kuri WhatsApp: </label
+              >
+              <div class="form-text">
+                Urugero: <code>+2507...</code>
+              </div>
+              {% if form.whatsapp_number.errors %}
+                <div class="text-danger mt-1">
+                  {{ form.whatsapp_number.errors.0 }}
+                </div>
+              {% endif %}
+            </div>
+
+            <button
+              type="submit"
+              id="submitBtn"
+              class="btn btn-primary w-100 py-2 mt-3 d-none"
+             >            
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Automatically show the modal when the page loads
+    const consentModal = new bootstrap.Modal(
+      document.getElementById("consentModal")
+    );
+    consentModal.show();
+
+    const yesRadio = document.getElementById("consent_yes");
+    const noRadio = document.getElementById("consent_no");
+    const whatsappField = document.getElementById("whatsappNumberField");
+    const whatsappInput = document.getElementById("whatsappNumber");
+    const form = document.getElementById("consentForm");
+    const submitBtn = document.getElementById("submitBtn");
+
+    function toggleWhatsappField() {
+      if (yesRadio.checked) {
+        whatsappField.classList.remove("d-none");
+        whatsappInput.disabled = false;
+        whatsappInput.focus();
+        submitBtn.innerHTML = "Emeza";
+      } else if (noRadio.checked) {
+        whatsappField.classList.add("d-none");
+        whatsappInput.disabled = true;
+        submitBtn.innerHTML = "Komeza";
+      }
+    }
+
+    document.querySelectorAll('input[name="consent"]').forEach((radio) => {
+      radio.addEventListener("change", function () {
+      toggleWhatsappField();
+      submitBtn.classList.remove("d-none");      
+    });
+    });
+
+    toggleWhatsappField();
+
+    
+     form.addEventListener('submit', (e) => {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+    });
+  });
+</script>
+{% endblock %}
