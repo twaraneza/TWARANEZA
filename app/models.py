@@ -74,28 +74,28 @@ class UserProfile(AbstractUser):
     objects = UserProfileManager()
 
     def save(self, *args, **kwargs):
-        
+
         if getattr(self, "_is_saving", False):
             return
         self._is_saving = True
-        
-        try:   
-            
+
+        try:
+
             """Normalize phone number before saving to ensure consistency."""
             if self.phone_number:
                 self.phone_number = self.normalize_phone_number(self.phone_number)
-                
+
             if self.email:
                 self.whatsapp_consent = True
-            
+
             if not self.phone_number or len(self.phone_number) < 3:
                 raise ValueError("Phone number must have at least 3 digits.")
 
-            
+
             if self._state.adding:
                 # 1. Strip any existing numeric suffix (_XYZ) from the name
                 base_name = self.name.split('_')[0]
-                                
+
                 if UserProfile.objects.filter(name=base_name).exists():
                     # Try to generate a unique suffix
                     for _ in range(100):  # max 100 attempts
@@ -103,20 +103,20 @@ class UserProfile(AbstractUser):
                         suffix = (int(self.phone_number[-2:]) + random.randint(0, 9)) % 100
                         suffix_str = str(suffix).zfill(2)
                         new_name = f"{base_name}_{suffix_str}"
-                    
+
                         # Check if this name is already in the database
                         if not UserProfile.objects.filter(name=new_name).exists():
                             self.name = new_name
-                            break 
+                            break
                     else:
                         # If after 100 tries no unique name is found
                         raise ValueError("Gerageza irindi zina.")
-            
+
             super().save(*args, **kwargs)
 
         finally:
             self._is_saving = False
-    
+
     def clean(self):
         """Ensure phone number is in the correct format before saving."""
         if not self.phone_number:
@@ -135,7 +135,7 @@ class UserProfile(AbstractUser):
 
         else:
             self.phone_number = None
-    
+
     def normalize_phone_number(self, phone_number):
         """Ensures phone numbers are always stored in the format: +2507XXXXXXXX."""
         try:
@@ -168,34 +168,7 @@ class UserProfile(AbstractUser):
             return False
         return self.subscription.expires_at and self.subscription.expires_at < timezone.now()
 
-    def send_otp_email(self):
-        """Generates and sends an OTP via email."""
-        if not self.email:
-            return
 
-        self.otp_code = str(random.randint(100000, 999999))
-        self.save()
-        message = f"Koresha iyi code y'isuzuma👉 {self.otp_code}"
-
-
-        try:
-            send_mail(
-                        subject=f"OTP Code yawe",
-                        message=message,
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[self.email],
-                        fail_silently=False,
-                    )
-            logger.info(f"📧 Email sent to {self.email}")
-            logger.debug(f"Attempting to send OTP to {self.email}")
-        except (BadHeaderError, SMTPException) as e:
-            raise ValidationError(
-                f"Imeri '{self.email}' ntabwo yakiriye ubutumwa. Waba warayanditse nabi cyangwa ntiyabayeho?"
-                )
-
-
-    def verify_otp(self, otp):
-        return self.otp_code == otp
 
     class Meta:
         verbose_name = "User"
@@ -204,8 +177,8 @@ class UserProfile(AbstractUser):
 
     def __str__(self):
         return self.email if self.email else f"{self.name}"
-  
-  
+
+
 class Plan(models.Model):
     PLAN_TYPE_CHOICES = [
         ('exam_limit', 'Exam-Limited Plan'),
@@ -215,7 +188,7 @@ class Plan(models.Model):
     plan_type = models.CharField(max_length=20, choices=PLAN_TYPE_CHOICES, default='exam_limit')
     plan_label = models.CharField(max_length=100, unique=True, help_text="e.g. '100 RWF = 1 exam'")
     price = models.PositiveIntegerField(default=0)
-    
+
     # Exam limit (used if plan_type = exam_limit)
     exam_limit = models.PositiveIntegerField(default=0, blank=True, help_text="Number of exams allowed for this plan")
 
@@ -410,13 +383,13 @@ class Course(models.Model):
     category = models.CharField(max_length=100, choices=[('Video', 'Video'), ('Isomo ryanditse', 'Isomo ryanditse'),], default='Video')
     exams_type = models.ForeignKey('ExamType', on_delete=models.SET_NULL, null=True, blank=True)
     description = RichTextField(
-        blank=True, null=True, 
+        blank=True, null=True,
         help_text="Ibibisobanuro by'isomo"
     )
     thumbnail = models.ImageField(upload_to='courses/thumbnails/', null=True, blank=True, validators=[FileExtensionValidator(['jpg', 'png', 'jpeg'])])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     # @property
     # def video_duration(self):
     #     if self.course_file and self.course_file.name.lower().endswith(('.mp4', '.avi', '.mkv')):
@@ -431,7 +404,7 @@ class Course(models.Model):
     #         except Exception as e:
     #             return f"Error: {str(e)}"
     #     return "Not a video"
-    
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -592,7 +565,7 @@ class Exam(models.Model):
             self.created_at = now
         self.updated_at = now
         super().save(*args, **kwargs)
-    
+
 
     is_active = models.BooleanField(default=False)
 
@@ -631,12 +604,12 @@ class ScheduledExam(models.Model):
             return False
 
         return self.scheduled_datetime <= timezone.now()
-    
+
     @property
     def is_live(self):
         """Check if the exam is live based on the scheduled time."""
         return timezone.now().hour == self.scheduled_datetime.hour and timezone.now().date() == self.scheduled_datetime.date()
-    
+
     @property
     def remaining_time(self):
         """Calculate remaining seconds until the exam is live."""
@@ -645,7 +618,7 @@ class ScheduledExam(models.Model):
 
         if scheduled_time > now:
             delta = scheduled_time - now
-            return int(delta.total_seconds() * 1000) 
+            return int(delta.total_seconds() * 1000)
         return 0
 
 
@@ -659,7 +632,7 @@ class ScheduledExam(models.Model):
             self.is_published
         super().save(*args, **kwargs)
 
-    
+
     def send_notification(self):
         """Send an email notification to all users when the exam goes live"""
         subject = f"New Exam is Live: {timezone.localtime(timezone.now())}"
@@ -744,7 +717,7 @@ class UserExam(models.Model):
     @property
     def is_passed(self):
         return 'Watsinze' if self.percent_score >= 60 else 'Watsinzwe'
-    
+
     @property
     def passed_bool(self):
         return self.percent_score >= 60
@@ -767,7 +740,7 @@ class UserExam(models.Model):
         first_exam = Exam.objects.order_by('created_at').first()  # Get the first exam instance
         if not first_exam:
             return False
-                
+
         return UserExam.objects.filter(user=user, exam_id=first_exam.id, completed_at__isnull=False).exists()
 
     def save(self, *args, **kwargs):

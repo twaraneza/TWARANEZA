@@ -10,7 +10,7 @@ from app.forms import CustomSetPasswordForm
 
 urlpatterns = [
     path("ahabanza/", views.home, name='ahabanza'),
-    
+
     path("", views.home, name='home'),
     path('check-unverified/', views.check_unverified_subscription, name='check_unverified'),
     path('isomo/<slug:slug>/', views.course_detail, name='course_detail'),
@@ -41,27 +41,27 @@ urlpatterns = [
     path('subscription/', views.subscription_status, name='subscription'),
     path('subscription/activate', views.activate_subscription_view, name='activate_subscription'),
     path('pay/', views.payment, name='payment'),
-    
+
     path('payment/confirm/', views.payment_confirm, name='payment_confirm'),
     path("pay/", momo_payment, name="momo_payment"),
     path("pay/status/<str:transaction_id>/", momo_payment_status, name="momo_payment_status"),
-    
+
     path('contact/', views.contact, name='contact'),
     path("ajax/check-unique/", views.check_unique_field, name="check_unique_field"),
     #authentications
     path('register/', register_view, name='register'),
     path('whatsapp-consent/', views.whatsapp_consent, name='whatsapp_consent'),
-    path('verify-otp/<int:user_id>/', verify_otp, name='verify_otp'),
-    path('resend-otp/<int:user_id>/', views.resend_otp, name='resend_otp'),
+    # path('verify-otp/<int:user_id>/', verify_otp, name='verify_otp'),
+    # path('resend-otp/<int:user_id>/', views.resend_otp, name='resend_otp'),
     path('login/', views.login_view, name='login'),
-    path('logout/', views.user_logout, name='logout'),  
-    
+    path('logout/', views.user_logout, name='logout'),
+
     #user profile
     path('profile/', profile_view, name='profile'),
     path('mark-notification-read/', user_profile_view.mark_notification_read, name='mark_notification_read'),
-    
+
     path('privacy-policy/', views.PrivacyPolicyView.as_view(), name='privacy_policy'),
-    
+
     path('hindura-password/', views.password_reset, name='password_reset'),
     path('reset/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
 ]
