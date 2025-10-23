@@ -53,8 +53,6 @@ def get_first_exam_id():
     return first_exam.id if first_exam else None
 
 
-
-@login_required(login_url='register')
 def home(request):
     context = {}
     return render(request, 'home.html', context)
@@ -203,9 +201,7 @@ def login_view(request):
                     user.phone_number = None
                     user.save(update_fields=["phone_number"])
                 
-                if user.email and not user.otp_verified:
-                    messages.error(request, "Please banza wuzuze kode yoherejwe yemeza ko email ari yawe.")
-                    return redirect("verify_otp", user_id=user.id)
+                
                 authenticated_user = authenticate(request, username=username, password=password)
                 
                 if authenticated_user:

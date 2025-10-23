@@ -37,7 +37,7 @@
         <div class="alert alert-info text-center mb-4">
           <input type="hidden" name="plan_id" id="selectedPlan">
           <div class="ussd-code">
-            *182*8*1*187756*<strong id="js-plan">0</strong>#
+            *182*8*1*1038413*<strong id="js-plan">0</strong>#
           </div>
           <button id="callButton" class="btn btn-outline-primary d-md-none mt-2">
             <i class="bi bi-telephone me-2"></i>Emeza
@@ -194,7 +194,7 @@
         return;
       }
       const planPrice = activeCard.dataset.planPrice;
-      const ussdCode = `*182*8*1*187756*${planPrice}#`;
+      const ussdCode = `*182*8*1*1038413*${planPrice}#`;
       window.location.href = "tel:" + encodeURIComponent(ussdCode);
     });
   });
