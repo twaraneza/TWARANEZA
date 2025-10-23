@@ -1,7 +1,7 @@
 # Ignore environment variables file
 .env
 *.env
-
+*deploy.sh
 # Ignore database files
 *.sqlite3
 
