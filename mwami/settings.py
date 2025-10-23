@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!#
 # SECURITY SETTINGS
 SECRET_KEY = config('DJANGO_SECRET_KEY')
-DEBUG = config('MY_DEBUG', default=False, cast=bool)
+DEBUG = False
 
-ALLOWED_HOSTS = config('MY_ALLOWED_HOSTS', default='127.0.0.1', cast=lambda v: v.split(','))
+ALLOWED_HOSTS = config('MY_ALLOWED_HOSTS',cast=lambda v: v.split(','))
 
 
 CSRF_TRUSTED_ORIGINS = config('MY_CSRF_TRUSTED_ORIGINS', cast=lambda v: v.split(','))
@@ -65,12 +65,12 @@ JAZZMIN_SETTINGS = {
     "site_icon": "img/favicon.ico",
     "welcome_sign": f"Welcome to Kigali Driving School Admin | {datetime.now().year}",
     "copyright": f"Kigali Driving School",
-    
+
     # Search
     "search_model": [
         "app.UserProfile",
-        "app.Subscription", 
-        "app.Exam", 
+        "app.Subscription",
+        "app.Exam",
         "app.Question"
     ],
 
@@ -80,21 +80,21 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": ["app.UserProfile", "app.Subscription", ],
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
-    
+
     "theme": "darkly",  # Always use dark theme
     "dark_mode_theme": "darkly",  # Ensure dark mode uses same theme
     "theme_toggle": False,  # Disable switching to light theme
 
-    
+
     # Customization
     "show_ui_builder": True,
     "changeform_format": "horizontal_tabs",
     "related_modal_active": True,
-    
+
     # Top Menu
     "topmenu_links": [
         {"name": "Home", "url": "/", "permissions": ["auth.view_user"]},
-        
+
     ],
 }
 
@@ -271,23 +271,23 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+#EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+#EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # MTN MOMO API CONFIGURATION
-MTN_MOMO_SUBSCRIPTION_KEY = config("MTN_MOMO_SUBSCRIPTION_KEY")
-MTN_MOMO_API_USER_ID = config("MTN_MOMO_API_USER_ID")
-MTN_MOMO_API_KEY = config("MTN_MOMO_API_KEY")
-MTN_MOMO_CALLBACK_URL = config("MTN_MOMO_CALLBACK_URL")
-MTN_MOMO_COLLECTION_PRIMARY_KEY = config("MTN_MOMO_COLLECTION_PRIMARY_KEY")
-MTN_MOMO_BASE_URL = config("MTN_MOMO_BASE_URL")
+MTN_MOMO_SUBSCRIPTION_KEY = config("MTN_MOMO_SUBSCRIPTION_KEY", default=None)
+MTN_MOMO_API_USER_ID = config("MTN_MOMO_API_USER_ID", default=None)
+MTN_MOMO_API_KEY = config("MTN_MOMO_API_KEY", default=None)
+MTN_MOMO_CALLBACK_URL = config("MTN_MOMO_CALLBACK_URL", default=None)
+MTN_MOMO_COLLECTION_PRIMARY_KEY = config("MTN_MOMO_COLLECTION_PRIMARY_KEY", default=None)
+MTN_MOMO_BASE_URL = config("MTN_MOMO_BASE_URL", default=None)
 
 LOGIN_URL = 'login'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_CLIENT_ID')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('GOOGLE_CLIENT_SECRET')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_CLIENT_ID')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('GOOGLE_CLIENT_SECRET')
 
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
@@ -329,4 +329,4 @@ WHATSAPP_API_URL = config('WHATSAPP_API_URL', default='https://7105.api.greenapi
 INSTANCE_ID = config('INSTANCE_ID', default='7105229020')
 API_TOKEN = config('API_TOKEN', default='c554e7fe36214785890aded373a3c08625e3460ecce249d283')
 
-ADMIN_PHONE_NUMBER = config('ADMIN_PHONE_NUMBER', default='+250785287885')
+ADMIN_PHONE_NUMBER = config('ADMIN_PHONE_NUMBER',)

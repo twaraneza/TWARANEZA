@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 import json
 import base64
-from .decorators import * 
+from .decorators import *
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import get_backends
 from django.db.models import Q
@@ -84,7 +84,7 @@ def check_unique_field(request):
     response = {"exists": False}
 
     if field == "phone_number" and value:
-        
+
         if len(value) >= 10:
             response["exists"] = User.objects.filter(phone_number__icontains=value).exists()
 
@@ -111,20 +111,20 @@ def whatsapp_consent(request):
         form = WhatsAppConsentForm(request.POST)
 
         if form.is_valid():
-            
+
             if form.cleaned_data['consent'] == 'yes':
                 user.whatsapp_consent = True
                 user.whatsapp_notifications = True
                 phone = form.cleaned_data.get('whatsapp_number')
                 if phone:
                     valid_phone = validate_phone_number(phone)
-                    
+
                     if not valid_phone:
                         messages.error(request, 'Niba uhitampo yego, Andika nimero ya whatsapp neza!')
                         return render(request, 'registration/whatsapp_consent.html', {'form': form, 'user': user})
-                    
+
                     user.whatsapp_number = phone
-                    user.save(update_fields=['whatsapp_number'])                                       
+                    user.save(update_fields=['whatsapp_number'])
                     notify_admin(f"{user.name} consented to WhatsApp notifications with number: {phone}")
                     messages.success(request, "Wemeye kubona ubutumwa  bw'ikizamini gishya kuri WhatsApp. Urakoze!")
             else:
@@ -144,55 +144,55 @@ def whatsapp_consent(request):
     })
 
 
-@redirect_authenticated_users
-def verify_otp(request, user_id):
-    # Fetch the UserProfile instance
-    user_profile = get_object_or_404(UserProfile, id=user_id)
-    if request.method == 'POST':
-        otp = request.POST.get('otp')
-        if user_profile.verify_otp(otp):
-            user_profile.otp_verified = True
-            user_profile.save()
-            authenticated_user = authenticate(
-                request,
-                username=user_profile.phone_number or user_profile.email,
-                password=user_profile.password  # Ensure the correct password is stored
-            )
+# @redirect_authenticated_users
+# def verify_otp(request, user_id):
+#     # Fetch the UserProfile instance
+#     user_profile = get_object_or_404(UserProfile, id=user_id)
+#     if request.method == 'POST':
+#         otp = request.POST.get('otp')
+#         if user_profile.verify_otp(otp):
+#             user_profile.otp_verified = True
+#             user_profile.save()
+#             authenticated_user = authenticate(
+#                 request,
+#                 username=user_profile.phone_number or user_profile.email,
+#                 password=user_profile.password  # Ensure the correct password is stored
+#             )
 
 
-            if user_profile.phone_number == "":
-                    user_profile.phone_number = None
-                    user_profile.save(update_fields=["phone_number"])
+#             if user_profile.phone_number == "":
+#                     user_profile.phone_number = None
+#                     user_profile.save(update_fields=["phone_number"])
 
-            backend = get_backends()[0]
-            user_profile.backend = f"{backend.__module__}.{backend.__class__.__name__}"
-            login(request, user_profile)
-            
-            # Keep session active
-            update_session_auth_hash(request, user_profile)
+#             backend = get_backends()[0]
+#             user_profile.backend = f"{backend.__module__}.{backend.__class__.__name__}"
+#             login(request, user_profile)
 
-            messages.success(request, 'Kwemeza email yawe byakunze. uhawe ikaze!')
-            return redirect('home')
-        else:
-            messages.error(request, 'Code ntago ariyo, ongera ugerageze.')
-    return render(request, 'registration/verify_otp.html', {'user': user_profile})
+#             # Keep session active
+#             update_session_auth_hash(request, user_profile)
+
+#             messages.success(request, 'Kwemeza email yawe byakunze. uhawe ikaze!')
+#             return redirect('home')
+#         else:
+#             messages.error(request, 'Code ntago ariyo, ongera ugerageze.')
+#     return render(request, 'registration/verify_otp.html', {'user': user_profile})
 
 
 @redirect_authenticated_users
 def login_view(request):
     page='login'
-    
+
     # show_modal = request.GET.get('login') is not None
     if request.method == "POST":
         form = LoginForm(request.POST)
-        
+
         if form.is_valid():
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
 
             # Fetch user by email or phone number
              # Normalize phone number if needed
-            if "@" not in username:  
+            if "@" not in username:
                 username = EmailOrPhoneBackend().normalize_phone_number(username)
 
             # Fetch user by email or phone number
@@ -202,12 +202,12 @@ def login_view(request):
                 if user.phone_number == "":
                     user.phone_number = None
                     user.save(update_fields=["phone_number"])
-                
-                if user.email and not user.otp_verified:
-                    messages.error(request, "Please banza wuzuze kode yoherejwe yemeza ko email ari yawe.")
-                    return redirect("verify_otp", user_id=user.id)
+
+                # if user.email and not user.otp_verified:
+                #     messages.error(request, "Please banza wuzuze kode yoherejwe yemeza ko email ari yawe.")
+                #     return redirect("verify_otp", user_id=user.id)
                 authenticated_user = authenticate(request, username=username, password=password)
-                
+
                 if authenticated_user:
                     login(request, authenticated_user)
                     messages.success(request, "Kwinjira bikozwe neza cyane! Ikaze nanone.")
@@ -225,7 +225,7 @@ def login_view(request):
 
     else:
         form = LoginForm()
-        
+
     context = {
         "form": form,
         "page":page
@@ -243,7 +243,7 @@ def user_logout(request):
 
 @csrf_exempt
 def password_reset(request):
-    
+
     if request.method == "POST":
         phone_number = clean_phone_number(request.POST.get("phone_number"))
 
@@ -356,7 +356,7 @@ def course_detail(request, slug):
 def courses(request):
     courses = Course.objects.all()
     query = request.GET.get('q')
-    
+
     context = {
         'courses': courses,
         'query': query or '',
@@ -370,11 +370,11 @@ def courses(request):
 def navbar(request):
     # Get unique exam types that have exams
     exam_types = ExamType.objects.filter(exam__isnull=False, exam__for_scheduling=False).distinct().order_by('order')
-    
+
     # Prefetch related exams for each type
     exam_types = exam_types.prefetch_related('exam_set')
     num = exam_types.count()
-    
+
     context = {
         'exam_types': exam_types,
         'num':num
@@ -464,7 +464,7 @@ def scheduled_hours(request):
 
     current_hour = now.hour
     pending = True
-    
+
     if exams_scheduled.exists():
         for exam in exams_scheduled:
             if exam.scheduled_datetime.hour > current_hour:
@@ -533,7 +533,7 @@ def exams_by_type(request, exam_type):
         'returned_exams': returned_exams,
         'completed_exam_map': completed_exam_map,
         'counted_exams': returned_exams.count(),
-    }    
+    }
     return render(request, "exams/same_exams.html", context)
 
 @login_required(login_url='login')
@@ -543,7 +543,7 @@ def ajax_question(request, exam_id, question_number):
     questions = list(exam.questions.all())
     total_questions = len(questions)
     question = questions[question_number - 1]
-    
+
     # Get choices
     choices = []
     for i in range(1, 5):
@@ -579,7 +579,7 @@ def exam(request, exam_id, question_number):
         exam=exam,
         defaults={'score': 0, 'completed_at': None, 'started_at': timezone.now()}
     )
-    
+
     if exam.for_scheduling and hasattr(exam, 'scheduledexam') and not exam.scheduledexam.is_published:
         return render(request, '404.html', status=404)
 
@@ -611,7 +611,7 @@ def exam(request, exam_id, question_number):
             return redirect('exam', exam_id=exam_id, question_number=question_number + 1)
         elif 'previous' in request.POST and question_number > 1:
             return redirect('exam', exam_id=exam_id, question_number=question_number - 1)
-        
+
         elif 'submit' in request.POST:
             score = 0
             for question in questions:
@@ -632,7 +632,7 @@ def exam(request, exam_id, question_number):
                 user_exam.save()
                 if hasattr(request.user, 'subscription'):
                     request.user.subscription.record_exam_taken
-                    
+
             except ValidationError as e:
                 messages.error(request, str(e))
                 return redirect('subscription')
@@ -674,9 +674,9 @@ def exam(request, exam_id, question_number):
 
 @login_required(login_url='login')
 def exam_results(request, user_exam_id):
-    
+
     user_exam = get_object_or_404(UserExam, id=user_exam_id, user=request.user)
-    
+
     # if not request.user.is_subscribed or not request.user.subscription.exam_taken == 1 and not user_exam.exam.id == get_first_exam_id():
     #     messages.error(request, mark_safe(
     #         f"<span>Iki kizamini ufite amanota</span> {user_exam.score}<br><h6>Gura ifatabuguzi kugirango ubashe kureba byose!</h6>"
@@ -698,12 +698,12 @@ def exam_results(request, user_exam_id):
 @login_required(login_url='login')
 @subscription_required
 def retake_exam(request, exam_id):
-    if not request.user.is_subscribed and not request.user.is_staff: 
+    if not request.user.is_subscribed and not request.user.is_staff:
         messages.error(request, mark_safe(
             "<h2>Gura ifatabuguzi kugirango ubashe gusubirampo ikizamini!</h2>"
         ))
         return redirect('subscription')
-    
+
     exam = get_object_or_404(Exam, id=exam_id)
     if exam.for_scheduling and hasattr(exam, 'scheduledexam') and not exam.scheduledexam.is_published:
         return render(request, '404.html', status=404)
@@ -796,7 +796,7 @@ def contact(request):
 
 def get_unverified_subscription(user):
     subscription = Subscription.objects.filter(
-        user=user, 
+        user=user,
         otp_code__isnull=False,
         otp_verified=False).first()
     return subscription
@@ -816,7 +816,7 @@ def payment(request):
 
 
 @login_required(login_url='login')
-def subscription_status(request): 
+def subscription_status(request):
     page = 'subscription_status'
     plans = Plan.objects.all()
     unverified_subscription = get_unverified_subscription(request.user)
@@ -824,7 +824,7 @@ def subscription_status(request):
         'plans': plans,
         'range_10': range(10),
         'first_exam_id': get_first_exam_id(),
-        'unverified_subscription' : unverified_subscription}    
+        'unverified_subscription' : unverified_subscription}
     return render(request, 'payment.html', context)
 # ---------------------
 # Subscription and Payment Views
@@ -834,15 +834,15 @@ def subscription_status(request):
 @login_required(login_url='login')
 @transaction.atomic
 def payment_confirm(request):
-   
+
     if request.method == 'POST':
         try:
             payeer_name = request.POST.get('payeer_name', '').strip()
             payeer_phone = request.POST.get('payeer_phone', '').strip()
             plan_choice = request.POST.get('plan', '').strip()
             whatsapp_number = request.POST.get('whatsapp_number', '').strip()
-            
-            
+
+
             # Validate phone numbers
             try:
                 validate_phone_number(payeer_phone)
@@ -850,14 +850,14 @@ def payment_confirm(request):
             except ValidationError as e:
                 messages.error(request, str(e))
                 return render(request, 'payment.html', {'first_exam_id': get_first_exam_id()})
-            
+
             # Get plan
             try:
                 plan = Plan.objects.get(price=plan_choice)
             except Plan.DoesNotExist:
                 messages.error(request, "Server error")
                 return render(request, 'payment.html', {'first_exam_id': get_first_exam_id()})
-            
+
             # Create/update payment confirmation
             PaymentConfirm.objects.update_or_create(
                 user=request.user,
@@ -867,17 +867,17 @@ def payment_confirm(request):
                     'plan': plan,
                     'whatsapp_number': whatsapp_number,
                     'time': timezone.now()
-                }            
-            )            
-            
+                }
+            )
+
             notify_admin(f"New payment confirmation from {request.user.name}, payeer name: {payeer_name}, plan: {plan}, whatsapp: {whatsapp_number}")
-            
+
             messages.success(request, f"Kwemeza ubwishyu byoherejwe neza! Urakira igisubizo mu munota umwe.")
             return redirect('home')
-            
+
         except Exception as e:
             messages.error(request, "An error occurred while processing your payment confirmation. Please try again.")
-   
+
 
 @login_required(login_url='/?login=true')
 def subscription_view(request):
@@ -942,16 +942,16 @@ def activate_subscription_view(request):
             otp_used = Subscription.objects.filter(user=request.user, otp_verified=True, otp_code=otp).exists()
             subscription = Subscription.objects.filter(user=request.user, otp_verified=True).first()
             otp_used_at = localtime(subscription.started_at).strftime("%d-%m-%Y Saa %H:%M") if otp_used else None
-            
+
             expires_at = localtime(subscription.expires_at).strftime("%d-%m-%Y Saa %H:%M") if subscription else "N/A"
             contact = ""
-            
+
             Error_type = f"Code wamaze kuyikoresha!!!" if otp_used else "Code ntago ariyo!!!"
             context.update({
                 "show_modal": True,
                 "Error_type": Error_type,
-                "modal_title": f"Error: {Error_type}",                
-                "modal_message": f'''                
+                "modal_title": f"Error: {Error_type}",
+                "modal_message": f'''
                  <br> ifatabuguzi ryafunguwe Taliki:
                 <strong>{otp_used_at}</strong> <br>
                 kugeza Taliki: <strong>{expires_at}</strong>'''
@@ -970,12 +970,12 @@ def activate_subscription_view(request):
             if expires_date == today:
                 expires_date = ''
             else:
-                expires_date = "Taliki " + expires_date 
-                
+                expires_date = "Taliki " + expires_date
+
             context.update({
                 "show_modal": True,
                 "modal_title": f"Ifatabuguzi <strong>'{plan_display}'</strong> riratangiye🎉",
-                "modal_message": f'''{message} Ubu wemerewe kwiga no gukosora ibizamini ushaka kugeza <br> 
+                "modal_message": f'''{message} Ubu wemerewe kwiga no gukosora ibizamini ushaka kugeza <br>
                 <strong>{expires_date} Saa {expires_hour}</strong>''',
                 "redirect_url": reverse("home"),
             })
@@ -991,7 +991,7 @@ def activate_subscription_view(request):
 
 
 def momo_payment(request):
-    
+
     phone_number = request.GET.get("phone")
     amount = request.GET.get("amount")
     if not phone_number or not amount:
@@ -1016,7 +1016,7 @@ class PrivacyPolicyView(View):
 
 
 def base_view(request):
-    
+
     context = {
         'current_year': datetime.datetime.now().year,
     }
@@ -1045,7 +1045,7 @@ def create_exam_page(request):
             number = int(request.POST.get("number", 0))
             if number <= 0:
                 raise ValueError("Number must be greater than 0")
-            
+
             exams_created, created_exam_ids = auto_create_exams(number)
             request.session['undo_exam_ids'] = created_exam_ids
             request.session['show_undo'] = True  # Add flag
@@ -1058,7 +1058,7 @@ def create_exam_page(request):
     # Show last 10 Ibivanze exams
     ibivanze_type = ExamType.objects.filter(name='Ibivanze').first()
     recent_exams = Exam.objects.filter(exam_type=ibivanze_type).order_by('-created_at')[:10]
-    
+
     context = {
         'recent_exams': recent_exams,
         'show_undo': request.session.pop('show_undo', False),
@@ -1069,9 +1069,9 @@ def create_exam_page(request):
 
 @staff_member_required
 def schedule_recent_exams(request):
-    
+
     if request.method == 'POST':
-        
+
         _ , message =  auto_schedule_recent_exams()
 
         messages.success(request, message)
@@ -1082,7 +1082,7 @@ def schedule_recent_exams(request):
 # ---------------------
 #404 Error Page
 def custom_page_not_found(request, exception):
-    
+
     context = {}
     return render(request, '404.html', context, status=404)
 
