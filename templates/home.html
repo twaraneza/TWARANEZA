@@ -1,10 +1,10 @@
-{% extends "base.html" %}
-{% load static %}
-{% block title %}Home — Ibizamini & Amasomo{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% load static %} {% block title %}Home — Ibizamini &
+Amasomo{% endblock %} {% block content %}
 <!-- AOS Styles -->
-<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link
+  href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"
+  rel="stylesheet"
+/>
 
 <style>
   /* Smooth fade-in for hero section */
@@ -35,10 +35,6 @@
   .img-fluid {
     transition: transform 0.4s ease;
   }
-
-  .img-fluid:hover {
-    transform: scale(1.05);
-  }
 </style>
 
 <div class="container py-5 hero-section">
@@ -50,14 +46,25 @@
         Ikaze muri Rwanda Driving College
       </h1>
       <p class="fs-5 text-muted mb-4">
-        Uru ni rubuga rugufasha kwiga no gukora 
-        <strong>ikizamini</strong> mu buryo bw'iminota <strong>20</strong> nkiyo mu kizamini ukora kuri Police kugira ngo witoze gukoresha igihe neza.
+        Uru ni rubuga rugufasha kwiga no gukora
+        <strong>ikizamini</strong> mu buryo bw'iminota <strong>20</strong> nkiyo
+        mu kizamini ukora kuri Police kugira ngo witoze gukoresha igihe neza.
       </p>
       <div class="d-flex flex-wrap gap-3">
-        <a class="btn btn-primary btn-lg px-4" href="{% url 'exam_detail' pk=0 %}" data-aos="zoom-in" data-aos-delay="200">
+        <a
+          class="btn btn-primary btn-lg px-4"
+          href="{% url 'exam_detail' pk=0 %}"
+          data-aos="zoom-in"
+          data-aos-delay="200"
+        >
           🚗 Kora Ikizamini
         </a>
-        <a class="btn btn-outline-secondary btn-lg px-4" href="{% url 'profile' %}" data-aos="zoom-in" data-aos-delay="400">
+        <a
+          class="btn btn-outline-secondary btn-lg px-4"
+          href="{% url 'profile' %}"
+          data-aos="zoom-in"
+          data-aos-delay="400"
+        >
           📋 Reba Ibizamini Wakoze
         </a>
       </div>
@@ -65,7 +72,11 @@
 
     <!-- Image Column -->
     <div class="col-lg-6 text-center" data-aos="fade-left">
-      <img src="{% static 'img/hero_image.jpeg' %}" class="img-fluid rounded shadow-sm" alt="Hero Image">
+      <img
+        src="{% static 'img/hero_image.jpeg' %}"
+        class="img-fluid rounded"
+        alt="Hero Image"
+      />
     </div>
   </div>
 </div>
