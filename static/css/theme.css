@@ -27,7 +27,7 @@
   --btn-bg-rgb: var(--primary-rgb);
 
   /* Gradient backgrounds */
-  --background-gradient-light: linear-gradient(180deg, #f5f7fa, #e3e6ec);
+  --background-gradient-light: linear-gradient(180deg, #f5f7fa, #f5f7fa);
   --background-gradient-dark: linear-gradient(180deg, rgb(2, 3, 19), rgb(1, 15, 36));
   --background-gradient: var(--background-gradient-dark);
 }

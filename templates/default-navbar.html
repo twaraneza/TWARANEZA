@@ -32,10 +32,8 @@
       href="{% url 'home' %}"
       >
       
-      {% if request.user.is_authenticated %}
-        <i class="bi bi-house-door-fill"></i>
-      {% endif %}
-      <strong>RD College</strong>
+      <img src="{% static 'img/logo.jpeg' %}" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
+      <strong>Rwanda Driving College</strong>
     </a>
 
     <span class="d-flex align-items-center gap-2"> 
